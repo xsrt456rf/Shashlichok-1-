@@ -1,0 +1,313 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Шашлычок №1 Халал — Онлайн-меню</title>
+<style>
+:root{
+  --bg:#fafafa; --card:#fff; --muted:#6b7280;
+  --accent:#d35400; --accent-2:#ff6b2d; --green:#10b981;
+  --shadow: 0 8px 30px rgba(16,24,40,0.08);
+  font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, Arial;
+}
+*{box-sizing:border-box}
+body{
+  margin:0; background:linear-gradient(180deg,#fff 0%,var(--bg) 100%);
+  color:#111; -webkit-font-smoothing:antialiased; padding-top:86px;
+}
+
+/* HEADER (фиксированный) */
+.header {
+  position:fixed; left:0; right:0; top:0; height:86px;
+  background:linear-gradient(90deg,var(--accent),var(--accent-2));
+  color:white; display:flex; align-items:center; justify-content:center;
+  box-shadow:0 6px 20px rgba(0,0,0,0.12); z-index:40;
+  padding:12px 20px;
+  animation: slideDown .4s ease;
+}
+.header-inner{ max-width:1100px; width:100%; display:flex; align-items:center; justify-content:space-between; gap:12px; }
+.brand{display:flex; align-items:center; gap:12px;}
+.logo{width:54px;height:54px;border-radius:10px;background:rgba(255,255,255,0.12);display:flex;align-items:center;justify-content:center;font-weight:700}
+.title{font-size:18px;font-weight:700}
+.phone{font-size:18px;font-weight:800; letter-spacing:0.6px}
+.delivery{font-size:13px; opacity:0.95}
+
+/* LAYOUT */
+.wrap{max-width:1100px;margin:28px auto;display:grid;grid-template-columns:1fr 360px;gap:24px;padding:0 20px;}
+@media (max-width:920px){ .wrap{grid-template-columns:1fr;padding:0 12px} }
+
+/* MENU CARDS */
+.menu{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}
+.card{background:var(--card);border-radius:12px;padding:12px;box-shadow:var(--shadow);display:flex;gap:12px;align-items:flex-start; animation:fadeIn .36s ease;}
+.img{width:120px;height:92px;border-radius:10px;background:#f5f5f5;display:flex;align-items:center;justify-content:center;border:1px solid #eee}
+.info{flex:1}
+.dish-name{font-weight:700;margin:0 0 6px 0}
+.dish-desc{color:var(--muted);font-size:13px;margin:0 0 8px 0}
+.row{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.price{font-weight:800;color:var(--accent)}
+
+/* BUTTONS */
+.btn{background:linear-gradient(180deg,var(--accent),var(--accent-2));color:white;padding:8px 12px;border-radius:10px;border:0;cursor:pointer;font-weight:700}
+.btn.ghost{background:transparent;color:var(--accent);border:1px solid rgba(255,255,255,0.12)}
+.btn:active{transform:translateY(1px)}
+
+/* SIDEBAR CART */
+.cart{background:#fff;padding:16px;border-radius:12px;box-shadow:var(--shadow);position:sticky; top:110px}
+.cart h3{margin:0 0 12px 0}
+.cart-list{max-height:360px;overflow:auto;margin-bottom:12px}
+.cart-item{display:flex;align-items:center;gap:10px;padding:8px 4px;border-bottom:1px dashed #f0f0f0}
+.ci-name{font-weight:600}
+.qty{display:inline-flex;align-items:center;border-radius:8px;overflow:hidden;border:1px solid #eee}
+.qty button{width:30px;height:30px;border:0;background:#fafafa;cursor:pointer}
+.qty span{display:inline-block;padding:0 8px;min-width:34px;text-align:center}
+.total{display:flex;justify-content:space-between;align-items:center;font-weight:800;margin-top:8px}
+.checkout{margin-top:12px;display:flex;gap:8px}
+
+/* MODAL */
+.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,0.5);display:flex;align-items:center;justify-content:center;z-index:60}
+.modal{background:white;padding:20px;border-radius:12px;max-width:420px;width:92%;box-shadow:0 12px 40px rgba(0,0,0,0.25);animation:modalIn .28s cubic-bezier(.16,1,.3,1)}
+.modal h4{margin:0 0 8px 0}
+.close-x{position:absolute;right:12px;top:10px;background:transparent;border:0;font-weight:700;font-size:18px;cursor:pointer}
+
+/* small */
+.empty{color:var(--muted);padding:18px;text-align:center}
+
+/* ANIMATIONS */
+@keyframes fadeIn { from{opacity:0; transform:translateY(8px)} to{opacity:1; transform:none} }
+@keyframes modalIn { from{opacity:0; transform:translateY(10px) scale(.98)} to{opacity:1; transform:none} }
+@keyframes slideDown { from{opacity:0; transform:translateY(-8px)} to{opacity:1; transform:none} }
+
+</style>
+</head>
+<body>
+
+<!-- FIXED HEADER WITH PHONE + DELIVERY -->
+<header class="header" role="banner" aria-label="Шапка сайта">
+  <div class="header-inner">
+    <div class="brand" aria-hidden="false">
+      <div class="logo">Ш№1</div>
+      <div>
+        <div class="title">Шашлычок №1 Халал</div>
+        <div class="delivery">Доставка по всей Астане 🚚</div>
+      </div>
+    </div>
+
+    <!-- PHONE placed clearly at top, clickable -->
+    <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px">
+      <a id="phoneLink" class="phone" href="#" style="color:white;text-decoration:none"></a>
+      <div style="font-size:12px;opacity:0.95">Нажмите, чтобы позвонить</div>
+    </div>
+  </div>
+</header>
+
+<!-- MAIN LAYOUT -->
+<div class="wrap" role="main">
+  <!-- Menu -->
+  <main>
+    <div style="margin-bottom:12px;color:var(--muted)">Категория: Популярное</div>
+    <div id="menu" class="menu" aria-live="polite"></div>
+  </main>
+
+  <!-- Cart -->
+  <aside>
+    <div class="cart" aria-label="Корзина">
+      <h3>Корзина</h3>
+      <div id="cartList" class="cart-list">
+        <div id="emptyMsg" class="empty">Ваша корзина пуста</div>
+      </div>
+
+      <div class="total">
+        <div>Итого</div>
+        <div id="total">0 ₸</div>
+      </div>
+
+      <div class="checkout">
+        <button id="orderBtn" class="btn" disabled>Оформить заказ</button>
+        <button id="clearCart" class="btn" style="background:transparent;color:var(--accent);border:1px solid #f1f1f1">Очистить</button>
+      </div>
+    </div>
+  </aside>
+</div>
+
+<!-- modal container (will be created dynamically) -->
+<script>
+/* ========== DATA ========== */
+const dishes = [
+  { id:1, name:"Шашлык из курицы", desc:"Сочный куриный шашлык на углях", price:1500 },
+  { id:2, name:"Шашлык из баранины", desc:"Ароматный бараний шашлык", price:2000 },
+  { id:3, name:"Люля-кебаб", desc:"Классический люля-кебаб на мангале", price:1800 },
+  { id:4, name:"Салат Халал", desc:"Свежие овощи и заправка", price:800 },
+  { id:5, name:"Картофель по-деревенски", desc:"Хрустящий и пряный", price:400 },
+];
+
+/* ========== STATE ========== */
+const cart = {};
+
+/* ========== ELEMENTS ========== */
+const menuEl = document.getElementById('menu');
+const cartList = document.getElementById('cartList');
+const totalEl = document.getElementById('total');
+const orderBtn = document.getElementById('orderBtn');
+const emptyMsg = document.getElementById('emptyMsg');
+const phoneLink = document.getElementById('phoneLink');
+const clearCartBtn = document.getElementById('clearCart');
+
+/* ========== HELPERS ========== */
+function money(n){ return n.toLocaleString('ru-RU') + ' ₸'; }
+function escapeHtml(s){ return String(s).replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;'); }
+
+/* Генератор номера формата +7 7XX XXX XX XX */
+function randomKazPhone(){
+  // 7XX: 700–799 common mobile codes, use 700..799 but format 7XX
+  const three = Math.floor(100 + Math.random()*900); // 100-999
+  const a = String(three).slice(0,3);
+  const b = Math.floor(100 + Math.random()*900);
+  const c = Math.floor(10 + Math.random()*90);
+  const d = Math.floor(10 + Math.random()*90);
+  // final format: +7 7XX XXX XX XX
+  const part1 = a; // e.g. 705
+  const part2 = String(b).padStart(3,'0'); // 3 digits
+  const part3 = String(c).padStart(2,'0');
+  const part4 = String(d).padStart(2,'0');
+  return `+7 ${part1} ${part2} ${part3} ${part4}`;
+}
+
+/* Сформатировать для tel: убирая пробелы */
+function telHref(phone){
+  return 'tel:' + phone.replace(/\s+/g,'').replace(/\+/g,'%2B');
+}
+
+/* ========== RENDER MENU ========== */
+function svgPlaceholder(){
+  return `<svg viewBox="0 0 24 24" width="80" height="80" aria-hidden="true"><rect x="2" y="3" width="20" height="14" rx="3" fill="#fff"/><path d="M6 10c1.333-1 2.667-4 4-4 1.333 0 2.667 3 4 4" stroke="#f97316" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/><path d="M19 3l-6 6" stroke="#ff8a4b" stroke-width="1.6" stroke-linecap="round"/></svg>`;
+}
+
+function renderMenu(){
+  menuEl.innerHTML = '';
+  for(const d of dishes){
+    const card = document.createElement('div');
+    card.className = 'card';
+    card.innerHTML = `
+      <div class="img">${svgPlaceholder()}</div>
+      <div class="info">
+        <div class="dish-name">${escapeHtml(d.name)}</div>
+        <div class="dish-desc">${escapeHtml(d.desc)}</div>
+        <div class="row">
+          <div class="price">${money(d.price)}</div>
+          <div><button class="btn" data-add="${d.id}">Добавить</button></div>
+        </div>
+      </div>
+    `;
+    menuEl.appendChild(card);
+  }
+}
+
+/* ========== RENDER CART ========== */
+function renderCart(){
+  cartList.innerHTML = '';
+  const keys = Object.keys(cart);
+  if(keys.length === 0){
+    emptyMsg.style.display = 'block';
+    totalEl.textContent = money(0);
+    orderBtn.disabled = true;
+    return;
+  }
+  emptyMsg.style.display = 'none';
+  let total = 0;
+  for(const id of keys){
+    const dish = dishes.find(x=>x.id==id);
+    const qty = cart[id];
+    const line = dish.price * qty;
+    total += line;
+    const row = document.createElement('div');
+    row.className = 'cart-item';
+    row.innerHTML = `
+      <div style="flex:1">
+        <div class="ci-name">${escapeHtml(dish.name)}</div>
+        <div style="font-size:13px;color:var(--muted)">${money(dish.price)} × ${qty} = ${money(line)}</div>
+      </div>
+      <div class="qty" role="group" aria-label="количество">
+        <button data-dec="${dish.id}" aria-label="убавить">−</button>
+        <span>${qty}</span>
+        <button data-inc="${dish.id}" aria-label="прибавить">+</button>
+      </div>
+    `;
+    cartList.appendChild(row);
+  }
+  totalEl.textContent = money(total);
+  orderBtn.disabled = false;
+}
+
+/* ========== CART OPS ========== */
+function addToCart(id, delta=1){
+  if(!cart[id]) cart[id]=0;
+  cart[id] += delta;
+  if(cart[id] <= 0) delete cart[id];
+  renderCart();
+}
+
+/* ========== EVENTS ========== */
+menuEl.addEventListener('click', e=>{
+  const id = e.target.dataset.add;
+  if(id) addToCart(id,1);
+});
+cartList.addEventListener('click', e=>{
+  if(e.target.dataset.inc) addToCart(e.target.dataset.inc,1);
+  if(e.target.dataset.dec) addToCart(e.target.dataset.dec,-1);
+});
+clearCartBtn.addEventListener('click', ()=>{
+  for(const k of Object.keys(cart)) delete cart[k];
+  renderCart();
+});
+
+/* ========== ORDER FLOW ========== */
+function createModal(html){
+  const bg = document.createElement('div');
+  bg.className = 'modal-bg';
+  bg.innerHTML = `<div class="modal">${html}</div>`;
+  document.body.appendChild(bg);
+  bg.addEventListener('click', (ev)=>{ if(ev.target===bg) bg.remove(); });
+  return bg;
+}
+
+orderBtn.addEventListener('click', ()=>{
+  // Собираем заказ
+  const items = Object.keys(cart).map(id=>{
+    const d = dishes.find(x=>x.id==id);
+    return `${d.name} x${cart[id]}`;
+  }).join('\n');
+
+  // Текущий телефон из хедера
+  const phoneText = phoneLink.dataset.number || phoneLink.textContent || '';
+
+  const html = `
+    <h4>Заказ принят</h4>
+    <p style="color:var(--muted)">Мы свяжемся по номеру:</p>
+    <div style="font-size:18px;font-weight:800;margin:8px 0">${escapeHtml(phoneText)}</div>
+    <p style="font-size:14px;color:var(--muted);white-space:pre-line">${escapeHtml(items)}</p>
+    <div style="margin-top:12px;display:flex;gap:8px">
+      <button id="modalOk" class="btn" style="flex:1">Ок</button>
+      <button id="modalCall" class="btn" style="flex:1;background:#fff;color:var(--accent);border:1px solid #fee2d0">Перезвонить</button>
+    </div>
+  `;
+  const modal = createModal(html);
+  document.getElementById('modalOk').onclick = ()=> { modal.remove(); for(const k of Object.keys(cart)) delete cart[k]; renderCart(); };
+  document.getElementById('modalCall').onclick = ()=> { window.location.href = telHref(phoneText); };
+});
+
+/* ========== INIT HEADER PHONE ========== */
+(function initPhone(){
+  const phone = randomKazPhone(); // +7 7XX XXX XX XX
+  phoneLink.textContent = phone;
+  phoneLink.href = telHref(phone);
+  phoneLink.dataset.number = phone;
+})();
+
+/* ========== INITIAL RENDER ========== */
+renderMenu();
+renderCart();
+
+</script>
+</body>
+</html>
